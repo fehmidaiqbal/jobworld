@@ -9,7 +9,7 @@ class User_personal_info(models.Model):
    state_id= models.IntegerField(max_length=2)
    city_id= models.IntegerField(max_length=2)
    area_id= models.IntegerField(max_length=2)
-   user_id= models.AutoField(primary_key=True,db_index=True)
+   user_id= models.AutoField(primary_key=True,db_index=True) # testing push from others 
 
 class state_info(models.Model):
     state_name = models.CharField(max_length=50)
