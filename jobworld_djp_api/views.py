@@ -6,7 +6,7 @@ from jobworld_djp_api.Serializer import User_personal_info_Serializer,state_info
 
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
-import datetime
+
 
 
 @api_view(['POST'])
@@ -163,7 +163,40 @@ def create_qualif_info(request):
     userExist = User_personal_info.objects.filter(user_id__exact = userId).exists()
     if userExist == False:
         return JsonResponse(getError("user not found"))
- 
+
+    CourseTypeId = input['coursetype_id']
+    if len(CourseTypeId) == 0:
+        return JsonResponse(getError("CourseTypeId missing in request"))
+
+    CourseId = input['course_id']
+    if len(CourseId) == 0:
+        return JsonResponse(getError("CourseId missing in request"))
+
+    BranchId = input['branch_id']
+    if len(BranchId) == 0:
+        return JsonResponse(getError("BranchId missing in request"))
+    
+    Year = input['passout_year']
+    if len(Year) == 0:
+        return JsonResponse(getError("Year missing in request"))
+
+    Qualif = input['highest_qualif']
+    
+
+    Aggre = input['aggregate']
+    if Aggre != 2:
+        return JsonResponse(getError("invalid Aggregate"))
+    if Aggre < 100:
+        return JsonResponse(getError("invalid Aggregate"))
+
+    Obj2 = qualif_info(user_id = userId, coursetype_id = CourseTypeId ,course_id = CourseId,branch_id = BranchId,passout_year = Year,highest_qualif = Qualif,aggregate = Aggre)
+    Obj2.save()
+
+    response = {"qualification_id":Obj2.qualif_id}
+
+    return JsonResponse(status = 201,data = response)
+    
+
 
 @api_view(['POST'])  
 def update_qualif_info(request):
