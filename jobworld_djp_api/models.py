@@ -4,12 +4,12 @@ class User_personal_info(models.Model):
    first_name = models.CharField(max_length=20)
    second_name = models.CharField(max_length=20)
    mobile_num= models.CharField(max_length=10,db_index=True,unique=True)
-   email_id = models.CharField(max_length=50,blank=False,db_index=True,unique=True)
+   email_id = models.CharField(max_length=20,blank=False,db_index=True,unique=True)
    password= models.CharField(max_length=8,blank = False)
    state_id= models.IntegerField(max_length=2)
    city_id= models.IntegerField(max_length=2)
    area_id= models.IntegerField(max_length=2)
-   user_id= models.AutoField(primary_key=True,db_index=True) # testing push from others 
+   user_id= models.AutoField(primary_key=True,db_index=True)  
 
 class state_info(models.Model):
     state_name = models.CharField(max_length=50)
