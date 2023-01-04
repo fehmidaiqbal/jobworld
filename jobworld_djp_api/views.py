@@ -152,10 +152,9 @@ def get_area_info(request):
     return JsonResponse(responseAreaList,status=200)
 
 
-@api_view(['POST'])  
-def create_qualif_info(request):
+@api_view(['POST','PUT'])  
+def CUqualif_info(request):
     input = request.data 
-     
     userId = input['user_id']
     if len(userId) == 0:
         return JsonResponse(getError("userId missing in request"))
@@ -189,18 +188,21 @@ def create_qualif_info(request):
     if Aggre < 100:
         return JsonResponse(getError("invalid Aggregate"))
 
-    Obj2 = qualif_info(user_id = userId, coursetype_id = CourseTypeId ,course_id = CourseId,branch_id = BranchId,passout_year = Year,highest_qualif = Qualif,aggregate = Aggre)
-    Obj2.save()
-
-    response = {"qualification_id":Obj2.qualif_id}
-
-    return JsonResponse(status = 201,data = response)
+    if request.method == 'POST':
+        Obj2 = qualif_info(user_id = userId, coursetype_id = CourseTypeId ,course_id = CourseId,branch_id = BranchId,passout_year = Year,highest_qualif = Qualif,aggregate = Aggre)
+        Obj2.save()
+        response = {"qualification_id":Obj2.qualif_id}
+        return JsonResponse(status = 201,data = response)
+        
+    elif request.method == 'PUT':
+        qualificationId = input.get('quailfication_id')
+        if len(qualificationId) == 0 :
+            return  JsonResponse(getError("qualificationId is missing"))
+        Obj3 = qualif_info(qualif_id = qualificationId,user_id = userId, coursetype_id = CourseTypeId ,course_id = CourseId,branch_id = BranchId,passout_year = Year,highest_qualif = Qualif,aggregate = Aggre)
+        Obj3.save()
+        response = {"qualification_id":Obj3.qualif_id}
+        return JsonResponse(status = 201,data = response)
     
-
-
-@api_view(['POST'])  
-def update_qualif_info(request):
-    pass
 
 @api_view(['GET'])  
 def get_qualif_info(request):
@@ -226,7 +228,6 @@ def get_coursetypes(request):
         responseCourseTypeList.append(item)
     
     return JsonResponse(data=responseCourseTypeList,status =200)
-
 
 
 @api_view(['GET'])  
@@ -256,15 +257,32 @@ def get_branches(request):
 
 
 
-@api_view(['POST'])  
-def create_skill_info(request):
-    pass
+@api_view(['POST','PUT'])  
+def CUskill_info(request):
+    input =  request.data
+    skillName = input['skill_name']
+    if len(skillName) == 0:
+        return JsonResponse(getError("Skill missing in request"))
+   
+    if request.method == 'POST':
+        Obj4 = skills(skill_name = skillName)
+        Obj4.save()
+        response = {"Skill_id":Obj4.skill_id}
+        return JsonResponse(status = 201,data = response)
 
-@api_view(['POST'])  
-def update_skill_info(request):
-    pass
+    elif request.method == 'PUT':
+        Skill_id = input['skill_id']
 
-    
+        if len(Skill_id) == 0:
+            return JsonResponse(getError("Skill_id is missing"))
+        
+        Obj4 = skills(skill_name = skillName,skill_id = Skill_id)
+        Obj4.save()
+        response = {"Skill_id":Obj4.skill_id}
+
+        return JsonResponse(status = 201,data = response)
+
+                        
 
 @api_view(['GET'])  
 def get_userskill(request):
