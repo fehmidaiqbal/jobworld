@@ -1,10 +1,8 @@
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
-from jobworld_djp_api.models import User_personal_info,state_info,city_info,area_info,qualif_info,coursetypes,courses,branches,skills,user_skill
-from jobworld_djp_api.Serializer import User_personal_info_Serializer,state_info_Serializer,city_info_Serializer,area_info_Serializer,qualif_info_Serializer,coursetypes_Serializer,courses_Serializer,branches_Serializer,skills_Serializer,user_skill_Serializer
+from jobworld_djp_api.models import User_personal_info,state_info,city_info,area_info,qualif_info,courses,branches,skills,user_skill
+from jobworld_djp_api.Serializer import User_personal_info_Serializer
 
-from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
 
 
@@ -246,10 +244,19 @@ def get_branches(request):
      
     return JsonResponse(data = responseBranchesList,status =200)
 
-@api_view(['GET'])  
-def get_skill_list(request):
-    queryList = skills.objects.all.values()
-    return JsonResponse(data = queryList,status=200)
+@api_view(['GET','POST'])  
+def skill(request):
+    if request.method == 'POST':
+        skill = request.data["skill"]
+        obj = skills(skill_name=skill)
+        obj.save()
+        return JsonResponse(data={"skill_id":obj.skill_id},status = 201,safe=False)
+    queryList = skills.objects.all()
+    aList = []
+    for item in queryList:
+        aSkill = {"skill_id":item.skill_id,"skill_name":item.skill_name}
+        aList.append(aSkill)
+    return JsonResponse(data = aList,status=200,safe=False)
 
 
 @api_view(['GET'])  
@@ -265,7 +272,7 @@ def get_userskill(request):
     for item in queryList:
         responseUserSkillsList.append(item)
      
-    return JsonResponse(data = responseUserSkillsList,status =200)
+    return JsonResponse(responseUserSkillsList,status =200)
     
 
 
