@@ -268,7 +268,7 @@ def get_branches(request):
     return JsonResponse(data = responseBranchesList,status =200)
 
 @api_view(['GET','POST'])  
-def skill(request):
+def Skill(request):
     if request.method == 'POST':
         skill = request.data["skill"]
         obj = skills(skill_name=skill)
