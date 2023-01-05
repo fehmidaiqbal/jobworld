@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from jobworld_djp_api.models import User_personal_info,state_info,city_info,area_info,qualif_info,courses,branches,skills,user_skill
+from jobworld_djp_api.models import User_personal_info, coursetypes,state_info,city_info,area_info,qualif_info,courses,branches,skills,user_skill
 from jobworld_djp_api.Serializer import User_personal_info_Serializer
 
 from rest_framework.decorators import api_view
@@ -114,8 +114,19 @@ def get_personal_info(request):
 
 @api_view(['GET'])  
 def get_state_info(request):
-   queryList = state_info.objects.all.values()
-   return JsonResponse(data = queryList,status=200)
+    if request.method == 'POST':
+        State = request.data["state_name"]
+        obj = state_info(state_name=State)
+        obj.save()
+        return JsonResponse(data={"State_Id":obj.state_id},status = 201,safe=False)
+    queryList = state_info.objects.all()
+    aList = []
+    for item in queryList:
+        temp = {"State_Id":item.state_id,"State":item.state_name}
+        aList.append(temp)
+    return JsonResponse(data = aList,status=200,safe=False)
+
+   
 
 @api_view(['GET'])  
 def get_city_info(request):
@@ -207,10 +218,22 @@ def get_qualif_info(request):
     return JsonResponse(responseQualifDetail,status=200,safe=False)
 
 
-@api_view(['GET'])  
+@api_view(['POST','GET'])  
 def get_coursetypes(request):
-    queryList = qualif_info.objects.all.values()
-    return JsonResponse(data = queryList,status =200)
+    if request.method == 'POST':
+        CourseType = request.data["coursetype_name"]
+        CourseDuration = request.data["coursetype_duration"]
+       
+        Obj = coursetypes(coursetype_name = CourseType,coursetype_duration = CourseDuration)
+        Obj.save()
+        return JsonResponse(data={"coursetype_id":Obj.coursetype_id},status = 201,safe=False)
+    
+    queryList = coursetypes.objects.all()
+    aList = []
+    for item in queryList:
+        temp = {"CourseType" : item.coursetype_name,"CourseTypeId": item.coursetype_id,"CourseDuration" : item.coursetype_duration}
+        aList.append(temp)
+    return JsonResponse(data = aList,status=200,safe=False)
 
 
 @api_view(['GET'])  
