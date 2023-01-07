@@ -236,14 +236,21 @@ def get_coursetypes(request):
     return JsonResponse(data = aList,status=200,safe=False)
 
 
-@api_view(['GET'])  
+@api_view(['POST''GET'])  
 def get_courses(request):
+    data = request.data
+    if request.method == 'POST':
+        CourseTypeId = data['coursetype_id']
+        CourseName = data['course_name']
+        temp = courses(course_name = CourseName,coursetype_id = CourseTypeId)
+        temp.save()
+        return JsonResponse(data={"course_id":temp.course_id},status = 201,safe=False)
+
     input = request.queryparams
     req_coursetype_id = input['coursetype_id']
     if len(req_coursetype_id) == 0:
         return JsonResponse(getError("CourseTypeId is missing in request"))
 
-    
     queryList = courses.objects.filter(coursetype_id__exact = req_coursetype_id).values()
     responseCoursesList = []
     for item in queryList:
@@ -268,7 +275,7 @@ def get_branches(request):
     return JsonResponse(data = responseBranchesList,status =200)
 
 @api_view(['GET','POST'])  
-def Skill(request):
+def skill_info(request):
     if request.method == 'POST':
         skill = request.data["skill"]
         obj = skills(skill_name=skill)
