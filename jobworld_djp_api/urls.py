@@ -20,7 +20,7 @@ urlpatterns = [
    path(r'getQualif',get_qualif_info),
    path(r'getCoursetype',get_coursetypes),
    path(r'Course',get_courses),
-   path(r'getBranch',get_branches),
+   path(r'Branch',get_branches),
    path(r'getSkillList',skill_info),
    path(r'getuserskill',get_userskill)
 
