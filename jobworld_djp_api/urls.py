@@ -6,7 +6,6 @@ from jobworld_djp_api.views import CUqualif_info, create__personal_info, get_are
 
 router = routers.DefaultRouter()
 
-
 urlpatterns = [
    path('', include(router.urls)),
    path(r'register',register_user), 
@@ -21,8 +20,8 @@ urlpatterns = [
    path(r'getCoursetype',get_coursetypes),
    path(r'Course',get_courses),
    path(r'Branch',get_branches),
-   path(r'getSkillList',skill_info),
-   path(r'getuserskill',get_userskill)
+   path(r'SkillList',skill_info),
+   path(r'Userskill',get_userskill)
 
 
 ]

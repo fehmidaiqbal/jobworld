@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 
 
 
-@api_view(['POST'])
+@api_view(['POST','GET'])
 def register_user(request):
         input = request.data
         serializer = User_personal_info_Serializer(data=input)
@@ -19,9 +19,10 @@ def register_user(request):
         Password = input.get('password')
 
         # check user name in users table
-        userExist = User_personal_info.objects.filter(email_id__exact=userName).exists()
-        if(userExist == True):
-            response = {"error":"user found, please login"}
+        if request.method == 'POST':
+            userExist = User_personal_info.objects.filter(email_id__exact=userName).exists()
+            if(userExist == True):
+                response = {"error":"user found, please login"}
             return JsonResponse(response,safe=False) 
         #if no user    
         serializer.save()
@@ -70,25 +71,25 @@ def create__personal_info(request):
     FirstName = data.get('first_name','')
     if len(FirstName) == 0:
         return JsonResponse(getError("First Name is missing"))
-    SecondName = data['second_name']
+    SecondName = data.get('second_name','')
     if len(SecondName) == 0:
         return JsonResponse(getError("Second Name is missing"))
-    MobileNo = data['mobile_num']
+    MobileNo = data.get('mobile_num','')
     if len(MobileNo) != 10:
         return JsonResponse(getError("Mobile No is invalid"))
-    UserIdenttity = data['email_id']
+    UserIdenttity = data.get('email_id','')
     if len(UserIdenttity) == 0:
         return JsonResponse(getError("email is missing"))
-    Password = data['password']
+    Password = data.get('password','')
     if len(Password) == 0:
         return JsonResponse(getError("Password is missing"))
-    State = data['state_id']
+    State = data.get('state_id','')
     if len(State) == 0:
         return JsonResponse(getError("State Name is missing"))
-    City = data['city_id']
+    City = data.get('city_id','')
     if len(City) == 0:
         return JsonResponse(getError("City Name is missing"))
-    Area = data['area_id']
+    Area = data.get('area_id','')
     if len(Area) == 0:
         return JsonResponse(getError("Area Name is missing"))
 
@@ -112,10 +113,10 @@ def get_personal_info(request):
     input = request.query_params
     UserId = input['user_id']
     queryList = User_personal_info.objects.filter(user_id__exact = UserId).values()
+    print(type(queryList))
     PList = []
     for item in queryList:
-        temp = {"First Name":item.first_name,"Second Name":item.second_name,"Mobile No":item.mobile_num,"User Identtity":item.email_id,"Password":item.password,"State":item.state_id,"City":item.city_id,"Area":item.area_id}
-        PList.append(temp)
+        PList.append(item)
     return JsonResponse(data = PList,status=201,safe=False)
 
     
@@ -194,67 +195,65 @@ def get_area_info(request):
 @api_view(['POST','PUT'])  
 def CUqualif_info(request):
     input = request.data 
-    userId = input['user_id']
-    if len(userId) == 0:
-        return JsonResponse(getError("userId is missing in request"))
+    UserId = input.get('user_id',0)
+    if UserId == 0:
+        return JsonResponse(getError("UserId is missing in request"))
     
-    userExist = User_personal_info.objects.filter(user_id__exact = userId).exists()
+    userExist = User_personal_info.objects.filter(user_id__exact = UserId).exists()
     if userExist == False:
         return JsonResponse(getError("user not found"))
 
-    CourseTypeId = input['coursetype_id']
-    if len(CourseTypeId) == 0:
+    CourseTypeId = input.get('coursetype_id',0)
+    if CourseTypeId == 0:
         return JsonResponse(getError("CourseTypeId is missing in request"))
 
-    CourseId = input['course_id']
-    if len(CourseId) == 0:
+    CourseId = input.get('course_id',0)
+    if CourseId == 0:
         return JsonResponse(getError("CourseId is missing in request"))
 
-    BranchId = input['branch_id']
-    if len(BranchId) == 0:
+    BranchId = input.get('branch_id',0)
+    if BranchId == 0:
         return JsonResponse(getError("BranchId is missing in request"))
     
-    Year = input['passout_year']
-    if len(Year) == 0:
+    Year = input.get('passout_year',0)
+    if Year == 0:
         return JsonResponse(getError("Year is missing in request"))
 
-    Qualif = input['highest_qualif']
-    if len(Qualif) == 0:
+    Qualif = input.get('highest_qualif','')
+    if Qualif == " ":
         return JsonResponse(getError("Qualification is  missing in request"))
 
-    Aggre = input['aggregate']
-    if (len(Aggre)!=2 and Aggre.isnumeric()== False):
+    Aggre = input.get('aggregate',0)
+    if (Aggre!=0 and Aggre > 99 ):
         return JsonResponse(getError("invalid Aggregate"))
 
     if request.method == 'POST':
-        Obj2 = qualif_info(user_id = userId, coursetype_id = CourseTypeId ,course_id = CourseId,branch_id = BranchId,passout_year = Year,highest_qualif = Qualif,aggregate = Aggre)
+        Obj2 = qualif_info(user_id = UserId, coursetype_id = CourseTypeId ,course_id = CourseId,branch_id = BranchId,passout_year = Year,highest_qualif = Qualif,aggregate = Aggre)
         Obj2.save()
         response = {"qualification_id":Obj2.qualif_id}
         return JsonResponse(status = 201,data = response)
         
     elif request.method == 'PUT':
-        qualificationId = input.get('quailfication_id')
-        if len(qualificationId) == 0 :
+        qualificationId = input.get('quailfication_id',0)
+        if qualificationId == 0 :
             return  JsonResponse(getError("qualificationId is missing"))
-        Obj3 = qualif_info(qualif_id = qualificationId,user_id = userId, coursetype_id = CourseTypeId ,course_id = CourseId,branch_id = BranchId,passout_year = Year,highest_qualif = Qualif,aggregate = Aggre)
+        Obj3 = qualif_info(qualif_id = qualificationId,user_id = UserId, coursetype_id = CourseTypeId ,course_id = CourseId,branch_id = BranchId,passout_year = Year,highest_qualif = Qualif,aggregate = Aggre)
         Obj3.save()
-        return JsonResponse(status = 200,data = Obj3)
+        return JsonResponse(status = 201,data = Obj3)
     
 
 @api_view(['GET'])  
 def get_qualif_info(request):
-    input = request.queryparams
-    req_user_id = input['user_id']
-    if len(req_user_id) == 0:
+    input = request.query_params
+    UserId= input['user_id']
+    if len(UserId) == 0:
         return JsonResponse(getError("UserId is missing in request"))
 
-    
-    queryList = qualif_info.objects.filter(user_id__exact = req_user_id).values()
-    responseQualifDetail = []
+    queryList = qualif_info.objects.filter(user_id__exact = UserId).values()
+    Qlist = []
     for item in queryList:
-        responseQualifDetail.append(item)
-    
-    return JsonResponse(responseQualifDetail,status=200,safe=False)
+        Qlist.append(item)
+        return JsonResponse(data = Qlist,status=200,safe=False)
 
 
 @api_view(['POST','GET'])  
@@ -294,10 +293,8 @@ def get_courses(request):
     responseCoursesList = []
     for item in queryList:
         responseCoursesList.append(item)
-     
     return JsonResponse(data = responseCoursesList,status =200,safe = False)
     
-
 @api_view(['POST','GET'])  
 def get_branches(request):
     data = request.data
@@ -335,20 +332,29 @@ def skill_info(request):
     return JsonResponse(data = aList,status=200,safe=False)
 
 
-@api_view(['GET'])  
+@api_view(['POST','GET'])  
 def get_userskill(request):
-    input = request.query_params
-    req_userId = input['user_id']
-    if len(req_userId) == 0:
-        return JsonResponse(getError("UserId is missing in request"))
-    
-    
-    queryList = user_skill.objects.filter(user_id__exact = req_userId).values()
-    responseUserSkillsList = []
-    for item in queryList:
-        responseUserSkillsList.append(item)
+    if request.method == 'POST':
+        input = request.data
+        UserId = input.get("user_id",0)
+        SkillId = input.get("skill_id",0)
+        Experience = input.get("experience",0)
+        Obj = user_skill(user_id = UserId,skill_id = SkillId,experience = Experience)
+        Obj.save()
+        USlist = {"UserId": Obj.user_id,"SkillId":Obj.skill_id,"Experience":Obj.experience}
+        return JsonResponse(data=USlist,status =201,safe=False)
+
+    if request.method == 'GET':
+        input = request.query_params 
+        UserId = input['user_id']
+        if UserId == 0:
+            return JsonResponse(getError("UserId is missing in request"))
+        queryList = user_skill.objects.filter(user_id__exact = UserId).values()
+        USlist = []
+        for item in queryList:
+            USlist.append(item)
      
-    return JsonResponse(responseUserSkillsList,status =200)
+    return JsonResponse(data = USlist,status =200,safe=False)
     
 
 
