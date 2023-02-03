@@ -5,28 +5,22 @@ from jobworld_djp_api.Serializer import User_personal_info_Serializer
 
 from rest_framework.decorators import api_view
 
-
-
-@api_view(['POST','GET'])
+@api_view(['POST'])
 def register_user(request):
         input = request.data
         serializer = User_personal_info_Serializer(data=input)
         valid = serializer.is_valid()
         if valid == False:
-            return JsonResponse({"error":"invalid data"})
-
+            print(serializer.errors)
+            return JsonResponse({"error":"invalid data","reason":serializer.errors})
         userName = input.get('email_id')
-        Password = input.get('password')
-
         # check user name in users table
-        if request.method == 'POST':
-            userExist = User_personal_info.objects.filter(email_id__exact=userName).exists()
-            if(userExist == True):
-                response = {"error":"user found, please login"}
+        userExist = User_personal_info.objects.filter(email_id__exact=userName).exists()
+        if(userExist == True):
+            response = {"error":"user found, please login"}
             return JsonResponse(response,safe=False) 
         #if no user    
-        serializer.save()
-        return JsonResponse(serializer.data,status = 201)    
+        return create__personal_info(request)
 
 @api_view(['POST'])
 def login_user(request):
@@ -65,7 +59,6 @@ def login_user(request):
 def getError(errorMsg):
   return {"error":errorMsg}
 
-@api_view(['POST','PUT'])
 def create__personal_info(request):
     data = request.data 
     FirstName = data.get('first_name','')
@@ -84,13 +77,13 @@ def create__personal_info(request):
     if len(Password) == 0:
         return JsonResponse(getError("Password is missing"))
     State = data.get('state_id','')
-    if len(State) == 0:
+    if State == 0:
         return JsonResponse(getError("State Name is missing"))
     City = data.get('city_id','')
-    if len(City) == 0:
+    if City == 0:
         return JsonResponse(getError("City Name is missing"))
     Area = data.get('area_id','')
-    if len(Area) == 0:
+    if Area == 0:
         return JsonResponse(getError("Area Name is missing"))
 
     if request.method == 'POST':

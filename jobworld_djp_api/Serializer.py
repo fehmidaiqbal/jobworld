@@ -5,7 +5,8 @@ from jobworld_djp_api.models import User_personal_info,state_info,city_info,area
 class User_personal_info_Serializer(serializers.ModelSerializer):
      class Meta:
        model = User_personal_info
-       fields = ('first_name','second_name','mobile_num','email_id','password','state_id','city_id','area_id','user_id')
+       
+       fields = ('first_name','second_name','mobile_num','email_id','password','state_id','city_id','area_id')
 
 class state_info_Serializer(serializers.ModelSerializer):
        class Meta:
