@@ -24,9 +24,9 @@ def register_user(request):
 
 @api_view(['POST'])
 def login_user(request):
-    requestData = request.data
-    userName = requestData.get("email_id")
-    password = requestData.get("password")
+    input= request.data
+    userName = input.get("email_id")
+    password = input.get("password")
     
     # validate request format
     if len(userName) == 0 or len(password) == 0 :
@@ -162,7 +162,7 @@ def get_area_info(request):
     data = request.data
     if request.method == 'POST':
         CityId = data.get("city_id",'')
-        Area = data["area_name"]
+        Area = data.get("area_name",'')
         Obj = area_info(city_id = CityId,area_name = Area)
         Obj.save()
         return JsonResponse(data={"Area_Id":Obj.area_id},status = 201,safe=False)
