@@ -26,13 +26,13 @@ def register_user(request):
 def login_user(request):
     input= request.data
     userName = input.get("email_id")
-    password = input.get("password")
+    passWord = input.get("password")
     
     # validate request format
-    if len(userName) == 0 or len(password) == 0 :
+    if len(userName) == 0 or len(passWord) == 0 :
         return JsonResponse({"error":"invalid input"})
 
-    if len(password) != 8:
+    if len(passWord) != 8:
         return JsonResponse({"error":"password is  invalid"})
 
     #check user_id existance in the table   
@@ -47,7 +47,7 @@ def login_user(request):
     dbPassword = dbData["password"]
     
      # validate user name and password with DB data 
-    if dbPassword == password :
+    if dbPassword == passWord :
         response = {}
         response["status"] = 1 
         response["user_id"] = dbData["user_id"]
@@ -61,17 +61,17 @@ def getError(errorMsg):
 
 def create__personal_info(request):
     data = request.data 
-    FirstName = data.get('first_name','')
-    if len(FirstName) == 0:
+    firstName = data.get('first_name','')
+    if len(firstName) == 0:
         return JsonResponse(getError("First Name is missing"))
-    SecondName = data.get('second_name','')
-    if len(SecondName) == 0:
+    secondName = data.get('second_name','')
+    if len(secondName) == 0:
         return JsonResponse(getError("Second Name is missing"))
-    MobileNo = data.get('mobile_num','')
-    if len(MobileNo) != 10:
+    mobileNo = data.get('mobile_num','')
+    if len(mobileNo) != 10:
         return JsonResponse(getError("Mobile No is invalid"))
-    UserIdenttity = data.get('email_id','')
-    if len(UserIdenttity) == 0:
+    userIdenttity = data.get('email_id','')
+    if len(userIdenttity) == 0:
         return JsonResponse(getError("email is missing"))
     Password = data.get('password','')
     if len(Password) == 0:
@@ -87,16 +87,16 @@ def create__personal_info(request):
         return JsonResponse(getError("Area Name is missing"))
 
     if request.method == 'POST':
-        Obj1 = User_personal_info(first_name = FirstName,second_name = SecondName,mobile_num = MobileNo, email_id = UserIdenttity, password = Password,state_id = State,city_id = City,area_id = Area)
+        Obj1 = User_personal_info(first_name = firstName,second_name = secondName,mobile_num = mobileNo, email_id = userIdenttity, password = Password,state_id = State,city_id = City,area_id = Area)
         Obj1.save()
         return JsonResponse(status = 201,data={"status":1,"UserId":Obj1.user_id})
     
     elif request.method == 'PUT':
-        UserId = data.get('user_id',0)
-        if UserId == 0 :
+        userId = data.get('user_id',0)
+        if userId == 0 :
             return  JsonResponse(getError("UserId is missing"))
 
-        Obj2 = User_personal_info(user_id= UserId,first_name = FirstName,second_name = SecondName,mobile_num = MobileNo, email_id = UserIdenttity, password = Password,state_id = State,city_id = City,area_id = Area)
+        Obj2 = User_personal_info(user_id= userId,first_name = firstName,second_name = secondName,mobile_num = mobileNo, email_id = userIdenttity, password = Password,state_id = State,city_id = City,area_id = Area)
         Obj2.save()
         return JsonResponse(status = 201,data={"firstName":Obj2.first_name},safe=False)
 
@@ -104,8 +104,8 @@ def create__personal_info(request):
 @api_view(['GET'])  
 def get_personal_info(request):
     input = request.query_params
-    UserId = input['user_id']
-    queryList = User_personal_info.objects.filter(user_id__exact = UserId).values()
+    userId = input['user_id']
+    queryList = User_personal_info.objects.filter(user_id__exact = userId).values()
     print(type(queryList))
     PList = []
     for item in queryList:
