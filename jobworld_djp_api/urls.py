@@ -20,7 +20,7 @@ urlpatterns = [
    path(r'Course',get_courses),
    path(r'Branch',get_branches),
    path(r'SkillList',skill_info),
-   path(r'Userskill',get_userskill)
+   path(r'Userskill',get_userskill) ## api to get user skill
 
 
 ]
