@@ -104,7 +104,7 @@ def create__personal_info(request):
 @api_view(['GET'])  
 def get_personal_info(request):
     input = request.query_params
-    userId = input['user_id']
+    userId = input.get('user_id',0)
     queryList = User_personal_info.objects.filter(user_id__exact = userId).values()
     print(type(queryList))
     PList = []
